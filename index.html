@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расчет одоранта ГРС</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .btn-calculate {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-calculate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-save {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .btn-save:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+        
+        .btn-save:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        .btn-view-data {
+            background: #2196F3;
+            color: white;
+            font-size: 14px;
+            padding: 10px;
+        }
+        
+        .btn-view-data:hover {
+            background: #0b7dda;
+            transform: translateY(-2px);
+        }
+        
+        .btn-settings {
+            background: #ff9800;
+            color: white;
+            font-size: 14px;
+            padding: 10px;
+        }
+        
+        .result {
+            background: #f0f7ff;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            display: none;
+        }
+        
+        .result.show {
+            display: block;
+            animation: slideIn 0.5s;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .result-value {
+            font-size: 36px;
+            color: #667eea;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .result-label {
+            color: #555;
+            font-size: 14px;
+        }
+        
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            display: none;
+            font-size: 14px;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+        
+        .message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+            display: block;
+        }
+        
+        .setup-section {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .setup-section.configured {
+            background: #d4edda;
+            border-color: #4CAF50;
+        }
+        
+        .setup-title {
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        
+        .setup-section.configured .setup-title {
+            color: #155724;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 10px;
+            color: #667eea;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .settings-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        
+        .settings-modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .settings-content {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            max-width: 450px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .instruction-box {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            line-height: 1.6;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ Расчет одоранта</h1>
+        <div class="subtitle">Газораспределительная станция</div>
+        
+        <div id="setupSection" class="setup-section">
+            <div class="setup-title">⚙️ Настройка облачного хранения</div>
+            <button class="btn btn-settings" onclick="openSettings()">Настроить Google Таблицу</button>
+        </div>
+        
+        <div class="form-group">
+            <label for="operator">Оператор (смена):</label>
+            <select id="operator">
+                <option value="">Выберите оператора</option>
+                <option value="Смена 1">Смена 1</option>
+                <option value="Смена 2">Смена 2</option>
+                <option value="Смена 3">Смена 3</option>
+                <option value="Смена 4">Смена 4</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="gasLevel">Наполненность газа (м³/ч):</label>
+            <input type="number" id="gasLevel" placeholder="Введите значение" step="0.01">
+        </div>
+        
+        <div class="form-group">
+            <label for="gasFlow">Расход газа по трубе (м³):</label>
+            <input type="number" id="gasFlow" placeholder="Введите значение" step="0.01">
+        </div>
+        
+        <button class="btn btn-calculate" onclick="calculate()">Рассчитать</button>
+        
+        <div id="result" class="result">
+            <div class="result-label">Необходимо капель одоранта в минуту:</div>
+            <div class="result-value" id="resultValue">0</div>
+            <button class="btn btn-save" onclick="saveData()" id="saveBtn">☁️ Сохранить данные</button>
+        </div>
+        
+        <div id="loading" class="loading">⏳ Сохранение...</div>
+        <div id="message" class="message"></div>
+        
+        <button class="btn btn-view-data" onclick="openSheet()">📊 Открыть таблицу с данными</button>
+    </div>
+
+    <!-- Модальное окно настроек -->
+    <div id="settingsModal" class="settings-modal">
+        <div class="settings-content">
+            <div class="settings-header">
+                <h2>⚙️ Настройки</h2>
+                <button class="close-btn" onclick="closeSettings()">✕</button>
+            </div>
+            
+            <div class="instruction-box">
+                <strong>📋 ИНСТРУКЦИЯ ПО НАСТРОЙКЕ:</strong><br><br>
+                
+                <strong>Шаг 1:</strong> Создайте Google Таблицу<br>
+                • Откройте drive.google.com<br>
+                • Создать → Google Таблицы<br>
+                • Назовите "Отчет одоранта ГРС"<br><br>
+                
+                <strong>Шаг 2:</strong> Создайте Apps Script<br>
+                • В таблице: Расширения → Apps Script<br>
+                • Вставьте код из файла google-apps-script.js<br>
+                • Сохраните проект<br><br>
+                
+                <strong>Шаг 3:</strong> Разверните веб-приложение<br>
+                • Нажмите "Развернуть" → "Новое развертывание"<br>
+                • Тип: "Веб-приложение"<br>
+                • Выполнять: "Мое"<br>
+                • Доступ: "Все"<br>
+                • Скопируйте URL веб-приложения<br><br>
+                
+                <strong>Шаг 4:</strong> Вставьте ссылки ниже
+            </div>
+            
+            <div class="form-group">
+                <label for="scriptUrl">URL Apps Script (для записи):</label>
+                <input type="text" id="scriptUrl" placeholder="https://script.google.com/macros/s/...">
+            </div>
+            
+            <div class="form-group">
+                <label for="sheetUrl">URL Google Таблицы (для просмотра):</label>
+                <input type="text" id="sheetUrl" placeholder="https://docs.google.com/spreadsheets/d/...">
+            </div>
+            
+            <button class="btn btn-save" onclick="saveSettings()">💾 Сохранить настройки</button>
+        </div>
+    </div>
+
+    <script>
+        // Загрузка настроек при старте
+        window.onload = function() {
+            const scriptUrl = localStorage.getItem('scriptUrl');
+            const sheetUrl = localStorage.getItem('sheetUrl');
+            
+            if (scriptUrl && sheetUrl) {
+                document.getElementById('setupSection').classList.add('configured');
+                document.querySelector('.setup-title').textContent = '✅ Облако настроено';
+            }
+        };
+        
+        // ============ ФОРМУЛА РАСЧЕТА ============
+        // ВАЖНО: ЗАМЕНИТЕ НА ВАШУ РЕАЛЬНУЮ ФОРМУЛУ!
+        function calculateOdorant(gasLevel, gasFlow) {
+            // Пример: капель/мин = (расход_газа * наполненность) / 1000
+            // ЗАМЕНИТЕ НА ВАШУ ФОРМУЛУ:
+            return (gasFlow * gasLevel) / 1000;
+        }
+        
+        function calculate() {
+            const operator = document.getElementById('operator').value;
+            const gasLevel = parseFloat(document.getElementById('gasLevel').value);
+            const gasFlow = parseFloat(document.getElementById('gasFlow').value);
+            
+            if (!operator) {
+                showMessage('❌ Выберите оператора!', 'error');
+                return;
+            }
+            
+            if (!gasLevel || !gasFlow) {
+                showMessage('❌ Заполните все поля!', 'error');
+                return;
+            }
+            
+            if (gasLevel <= 0 || gasFlow <= 0) {
+                showMessage('❌ Значения должны быть больше нуля!', 'error');
+                return;
+            }
+            
+            const result = calculateOdorant(gasLevel, gasFlow);
+            
+            document.getElementById('resultValue').textContent = result.toFixed(2);
+            document.getElementById('result').classList.add('show');
+            
+            window.currentCalculation = {
+                operator: operator,
+                gasLevel: gasLevel,
+                gasFlow: gasFlow,
+                result: result.toFixed(2),
+                timestamp: new Date().toLocaleString('ru-RU')
+            };
+            
+            hideMessage();
+        }
+        
+        async function saveData() {
+            const scriptUrl = localStorage.getItem('scriptUrl');
+            
+            if (!scriptUrl) {
+                showMessage('⚠️ Сначала настройте облачное хранение!', 'error');
+                openSettings();
+                return;
+            }
+            
+            if (!window.currentCalculation) {
+                showMessage('❌ Сначала выполните расчет!', 'error');
+                return;
+            }
+            
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('saveBtn').disabled = true;
+            
+            try {
+                const response = await fetch(scriptUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(window.currentCalculation)
+                });
+                
+                // Сохраняем также локально для резервной копии
+                let localData = JSON.parse(localStorage.getItem('odorantData') || '[]');
+                localData.push(window.currentCalculation);
+                localStorage.setItem('odorantData', JSON.stringify(localData));
+                
+                showMessage('✅ Данные сохранены в облако!', 'success');
+                
+                document.getElementById('gasLevel').value = '';
+                document.getElementById('gasFlow').value = '';
+                document.getElementById('result').classList.remove('show');
+                window.currentCalculation = null;
+                
+            } catch (error) {
+                showMessage('❌ Ошибка сохранения: ' + error.message, 'error');
+            } finally {
+                document.getElementById('loading').classList.remove('show');
+                document.getElementById('saveBtn').disabled = false;
+            }
+        }
+        
+        function openSettings() {
+            document.getElementById('settingsModal').classList.add('show');
+            
+            const scriptUrl = localStorage.getItem('scriptUrl') || '';
+            const sheetUrl = localStorage.getItem('sheetUrl') || '';
+            
+            document.getElementById('scriptUrl').value = scriptUrl;
+            document.getElementById('sheetUrl').value = sheetUrl;
+        }
+        
+        function closeSettings() {
+            document.getElementById('settingsModal').classList.remove('show');
+        }
+        
+        function saveSettings() {
+            const scriptUrl = document.getElementById('scriptUrl').value.trim();
+            const sheetUrl = document.getElementById('sheetUrl').value.trim();
+            
+            if (!scriptUrl || !sheetUrl) {
+                alert('Заполните оба поля!');
+                return;
+            }
+            
+            localStorage.setItem('scriptUrl', scriptUrl);
+            localStorage.setItem('sheetUrl', sheetUrl);
+            
+            document.getElementById('setupSection').classList.add('configured');
+            document.querySelector('.setup-title').textContent = '✅ Облако настроено';
+            
+            closeSettings();
+            showMessage('✅ Настройки сохранены!', 'success');
+        }
+        
+        function openSheet() {
+            const sheetUrl = localStorage.getItem('sheetUrl');
+            if (!sheetUrl) {
+                showMessage('⚠️ Сначала настройте Google Таблицу!', 'error');
+                openSettings();
+                return;
+            }
+            window.open(sheetUrl, '_blank');
+        }
+        
+        function showMessage(text, type) {
+            const message = document.getElementById('message');
+            message.textContent = text;
+            message.className = 'message ' + type;
+            setTimeout(hideMessage, 4000);
+        }
+        
+        function hideMessage() {
+            document.getElementById('message').className = 'message';
+        }
+    </script>
+</body>
+</html>
