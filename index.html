@@ -37,8 +37,21 @@
         .subtitle {
             text-align: center;
             color: #666;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             font-size: 14px;
+        }
+        
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            border-radius: 5px;
+        }
+        
+        .info-box strong {
+            color: #1976D2;
         }
         
         .form-group {
@@ -51,6 +64,12 @@
             color: #555;
             font-weight: bold;
             font-size: 14px;
+        }
+        
+        label .hint {
+            font-weight: normal;
+            color: #999;
+            font-size: 12px;
         }
         
         input, select {
@@ -104,20 +123,15 @@
             cursor: not-allowed;
         }
         
-        .btn-view-data {
-            background: #2196F3;
+        .btn-settings {
+            background: #ff9800;
             color: white;
             font-size: 14px;
             padding: 10px;
         }
         
-        .btn-view-data:hover {
-            background: #0b7dda;
-            transform: translateY(-2px);
-        }
-        
-        .btn-settings {
-            background: #ff9800;
+        .btn-view-data {
+            background: #2196F3;
             color: white;
             font-size: 14px;
             padding: 10px;
@@ -159,6 +173,27 @@
         .result-label {
             color: #555;
             font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .result-details {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 13px;
+            text-align: left;
+        }
+        
+        .result-details .row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .result-details .row:last-child {
+            border-bottom: none;
         }
         
         .message {
@@ -184,13 +219,6 @@
             display: block;
         }
         
-        .message.info {
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
-            display: block;
-        }
-        
         .setup-section {
             background: #fff3cd;
             border: 2px solid #ffc107;
@@ -208,6 +236,7 @@
             font-weight: bold;
             color: #856404;
             margin-bottom: 10px;
+            font-size: 14px;
         }
         
         .setup-section.configured .setup-title {
@@ -275,22 +304,64 @@
             line-height: 1.6;
             margin: 10px 0;
         }
+
+        .grs-input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .grs-input-group select {
+            flex: 2;
+        }
+
+        .grs-input-group input {
+            flex: 1;
+        }
+
+        .add-grs-btn {
+            padding: 8px 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>⚡ Расчет одоранта</h1>
-        <div class="subtitle">Газораспределительная станция</div>
+        <div class="subtitle">для ГРС</div>
+        
+        <div class="info-box">
+            <strong>📋 Методика расчета:</strong><br>
+            По СТ АО 970740000392-49-2025<br>
+            Норма одоризации: 16 г/1000м³
+        </div>
         
         <div id="setupSection" class="setup-section">
-            <div class="setup-title">⚙️ Настройка облачного хранения</div>
-            <button class="btn btn-settings" onclick="openSettings()">Настроить Google Таблицу</button>
+            <div class="setup-title">⚙️ Настройка параметров</div>
+            <button class="btn btn-settings" onclick="openSettings()">Настроить параметры</button>
+        </div>
+        
+        <div class="form-group">
+            <label for="grsName">
+                Название ГРС:
+            </label>
+            <div class="grs-input-group">
+                <select id="grsName" onchange="handleGrsSelect()">
+                    <option value="">Выберите ГРС</option>
+                    <option value="new">+ Добавить новую ГРС</option>
+                </select>
+                <input type="text" id="newGrsName" placeholder="Введите название" style="display: none;">
+            </div>
         </div>
         
         <div class="form-group">
             <label for="operator">Оператор (смена):</label>
             <select id="operator">
-                <option value="">Выберите оператора</option>
+                <option value="">Выберите смену</option>
                 <option value="Смена 1">Смена 1</option>
                 <option value="Смена 2">Смена 2</option>
                 <option value="Смена 3">Смена 3</option>
@@ -299,20 +370,46 @@
         </div>
         
         <div class="form-group">
-            <label for="gasLevel">Наполненность газа (м³/ч):</label>
-            <input type="number" id="gasLevel" placeholder="Введите значение" step="0.01">
+            <label for="dailyFlow">
+                Суточный расход газа (Qсут):
+                <span class="hint">м³/сут</span>
+            </label>
+            <input type="number" id="dailyFlow" placeholder="Введите расход газа за сутки" step="0.01">
         </div>
         
         <div class="form-group">
-            <label for="gasFlow">Расход газа по трубе (м³):</label>
-            <input type="number" id="gasFlow" placeholder="Введите значение" step="0.01">
+            <label for="sulfurInGas">
+                Содержание серы в газе (S):
+                <span class="hint">г/1000м³ (из химанализа)</span>
+            </label>
+            <input type="number" id="sulfurInGas" placeholder="Содержание меркаптановой серы" step="0.01">
         </div>
         
         <button class="btn btn-calculate" onclick="calculate()">Рассчитать</button>
         
         <div id="result" class="result">
-            <div class="result-label">Необходимо капель одоранта в минуту:</div>
+            <div class="result-label">Необходимый расход одоранта:</div>
             <div class="result-value" id="resultValue">0</div>
+            
+            <div class="result-details" id="resultDetails">
+                <div class="row">
+                    <span>Часовой расход газа:</span>
+                    <strong id="hourlyFlow">-</strong>
+                </div>
+                <div class="row">
+                    <span>Расход одоранта (час):</span>
+                    <strong id="hourlyOdorant">-</strong>
+                </div>
+                <div class="row">
+                    <span>Расход одоранта (мин):</span>
+                    <strong id="minuteOdorant">-</strong>
+                </div>
+                <div class="row">
+                    <span>Капель в минуту:</span>
+                    <strong id="dropsPerMinute">-</strong>
+                </div>
+            </div>
+            
             <button class="btn btn-save" onclick="saveData()" id="saveBtn">☁️ Сохранить данные</button>
         </div>
         
@@ -331,35 +428,31 @@
             </div>
             
             <div class="instruction-box">
-                <strong>📋 ИНСТРУКЦИЯ ПО НАСТРОЙКЕ:</strong><br><br>
-                
-                <strong>Шаг 1:</strong> Создайте Google Таблицу<br>
-                • Откройте drive.google.com<br>
-                • Создать → Google Таблицы<br>
-                • Назовите "Отчет одоранта ГРС"<br><br>
-                
-                <strong>Шаг 2:</strong> Создайте Apps Script<br>
-                • В таблице: Расширения → Apps Script<br>
-                • Вставьте код из файла google-apps-script.js<br>
-                • Сохраните проект<br><br>
-                
-                <strong>Шаг 3:</strong> Разверните веб-приложение<br>
-                • Нажмите "Развернуть" → "Новое развертывание"<br>
-                • Тип: "Веб-приложение"<br>
-                • Выполнять: "Мое"<br>
-                • Доступ: "Все"<br>
-                • Скопируйте URL веб-приложения<br><br>
-                
-                <strong>Шаг 4:</strong> Вставьте ссылки ниже
+                <strong>📋 Параметры расчета</strong><br><br>
+                Укажите содержание меркаптановой серы в одоранте (из паспорта на партию одоранта).<br><br>
+                Типичные значения: 0,37 или 0,41 г/м³
             </div>
             
             <div class="form-group">
-                <label for="scriptUrl">URL Apps Script (для записи):</label>
+                <label for="sulfurInOdorant">
+                    Содержание серы в одоранте (f):
+                    <span class="hint">г/м³ (из паспорта)</span>
+                </label>
+                <input type="number" id="sulfurInOdorant" placeholder="Например: 0.37" step="0.01" min="0.1" max="1.0">
+            </div>
+
+            <div class="instruction-box">
+                <strong>☁️ Облачное хранение (Google Sheets)</strong><br><br>
+                                
+            </div>
+            
+            <div class="form-group">
+                <label for="scriptUrl">URL Apps Script:</label>
                 <input type="text" id="scriptUrl" placeholder="https://script.google.com/macros/s/...">
             </div>
             
             <div class="form-group">
-                <label for="sheetUrl">URL Google Таблицы (для просмотра):</label>
+                <label for="sheetUrl">URL Google Таблицы:</label>
                 <input type="text" id="sheetUrl" placeholder="https://docs.google.com/spreadsheets/d/...">
             </div>
             
@@ -368,55 +461,169 @@
     </div>
 
     <script>
+        // Константы
+        const NORM = 16; // Норма одоризации г/1000м³
+        const DROP_WEIGHT = 0.03244; // Вес одной капли, г
+        const DROP_VOLUME = 0.04; // Объем одной капли, мл
+
         // Загрузка настроек при старте
         window.onload = function() {
+            loadSettings();
+            loadGrsList();
+        };
+
+        function loadSettings() {
+            const sulfurInOdorant = localStorage.getItem('sulfurInOdorant');
             const scriptUrl = localStorage.getItem('scriptUrl');
             const sheetUrl = localStorage.getItem('sheetUrl');
             
-            if (scriptUrl && sheetUrl) {
+            if (sulfurInOdorant) {
                 document.getElementById('setupSection').classList.add('configured');
-                document.querySelector('.setup-title').textContent = '✅ Облако настроено';
+                document.querySelector('.setup-title').textContent = '✅ Параметры настроены (f = ' + sulfurInOdorant + ' г/м³)';
             }
-        };
-        
-        // ============ ФОРМУЛА РАСЧЕТА ============
-        // ВАЖНО: ЗАМЕНИТЕ НА ВАШУ РЕАЛЬНУЮ ФОРМУЛУ!
-        function calculateOdorant(gasLevel, gasFlow) {
-            // Пример: капель/мин = (расход_газа * наполненность) / 1000
-            // ЗАМЕНИТЕ НА ВАШУ ФОРМУЛУ:
-            return (gasFlow * gasLevel) / 1000;
+        }
+
+        function loadGrsList() {
+            const grsList = JSON.parse(localStorage.getItem('grsList') || '[]');
+            const select = document.getElementById('grsName');
+            
+            // Очищаем и добавляем опции
+            while (select.options.length > 2) {
+                select.remove(2);
+            }
+            
+            grsList.forEach(grs => {
+                const option = document.createElement('option');
+                option.value = grs;
+                option.textContent = grs;
+                select.appendChild(option);
+            });
+        }
+
+        function handleGrsSelect() {
+            const select = document.getElementById('grsName');
+            const newInput = document.getElementById('newGrsName');
+            
+            if (select.value === 'new') {
+                newInput.style.display = 'block';
+                newInput.focus();
+            } else {
+                newInput.style.display = 'none';
+                newInput.value = '';
+            }
+        }
+
+        function getGrsName() {
+            const select = document.getElementById('grsName');
+            const newInput = document.getElementById('newGrsName');
+            
+            if (select.value === 'new') {
+                const newGrsName = newInput.value.trim();
+                if (newGrsName) {
+                    // Добавляем в список
+                    const grsList = JSON.parse(localStorage.getItem('grsList') || '[]');
+                    if (!grsList.includes(newGrsName)) {
+                        grsList.push(newGrsName);
+                        localStorage.setItem('grsList', JSON.stringify(grsList));
+                        loadGrsList();
+                    }
+                    return newGrsName;
+                }
+                return '';
+            }
+            return select.value;
         }
         
         function calculate() {
+            const grsName = getGrsName();
             const operator = document.getElementById('operator').value;
-            const gasLevel = parseFloat(document.getElementById('gasLevel').value);
-            const gasFlow = parseFloat(document.getElementById('gasFlow').value);
+            const dailyFlow = parseFloat(document.getElementById('dailyFlow').value);
+            const sulfurInGas = parseFloat(document.getElementById('sulfurInGas').value);
+            const sulfurInOdorant = parseFloat(localStorage.getItem('sulfurInOdorant'));
+            
+            // Проверка настроек
+            if (!sulfurInOdorant) {
+                showMessage('⚠️ Сначала настройте содержание серы в одоранте!', 'error');
+                openSettings();
+                return;
+            }
+            
+            // Проверка полей
+            if (!grsName) {
+                showMessage('❌ Выберите или введите название ГРС!', 'error');
+                return;
+            }
             
             if (!operator) {
                 showMessage('❌ Выберите оператора!', 'error');
                 return;
             }
             
-            if (!gasLevel || !gasFlow) {
-                showMessage('❌ Заполните все поля!', 'error');
+            if (!dailyFlow || dailyFlow <= 0) {
+                showMessage('❌ Введите суточный расход газа!', 'error');
                 return;
             }
             
-            if (gasLevel <= 0 || gasFlow <= 0) {
-                showMessage('❌ Значения должны быть больше нуля!', 'error');
+            if (sulfurInGas < 0 || sulfurInGas >= NORM) {
+                showMessage('❌ Проверьте содержание серы в газе (должно быть от 0 до 16)!', 'error');
                 return;
             }
             
-            const result = calculateOdorant(gasLevel, gasFlow);
+            // РАСЧЕТ ПО ФОРМУЛАМ
+            // 1. Часовой расход газа (формула 16)
+            const hourlyFlow = dailyFlow / 24;
             
-            document.getElementById('resultValue').textContent = result.toFixed(2);
+            // 2. Часовой расход одоранта (формула 17)
+            const hourlyOdorant = (hourlyFlow * (NORM - sulfurInGas)) / (1000 * sulfurInOdorant);
+            
+            // 3. Минутный расход одоранта (формула 18)
+            const minuteOdorant = hourlyOdorant / 60;
+            
+            // 4. Капель в минуту (формула 19)
+            const dropsPerMinute = minuteOdorant / DROP_WEIGHT;
+            
+            // Определяем формат вывода
+            let resultText = '';
+            let resultValue = '';
+            
+            if (dropsPerMinute < 60) {
+                // Формула 20 - секунд на каплю
+                const secondsPerDrop = 60 / dropsPerMinute;
+                resultValue = secondsPerDrop.toFixed(1) + ' сек';
+                resultText = '1 капля каждые ' + secondsPerDrop.toFixed(1) + ' секунд';
+            } else if (dropsPerMinute >= 60 && dropsPerMinute <= 180) {
+                // Капель в минуту
+                resultValue = dropsPerMinute.toFixed(1) + ' кап/мин';
+                resultText = dropsPerMinute.toFixed(1) + ' капель в минуту';
+            } else {
+                // Формула 22 - мл в минуту
+                const mlPerMinute = dropsPerMinute * DROP_VOLUME;
+                resultValue = mlPerMinute.toFixed(1) + ' мл/мин';
+                resultText = mlPerMinute.toFixed(1) + ' миллилитров в минуту';
+            }
+            
+            // Показываем результат
+            document.getElementById('resultValue').textContent = resultText;
+            document.getElementById('hourlyFlow').textContent = hourlyFlow.toFixed(2) + ' м³/ч';
+            document.getElementById('hourlyOdorant').textContent = hourlyOdorant.toFixed(2) + ' г/ч';
+            document.getElementById('minuteOdorant').textContent = minuteOdorant.toFixed(4) + ' г/мин';
+            document.getElementById('dropsPerMinute').textContent = dropsPerMinute.toFixed(2);
+            
             document.getElementById('result').classList.add('show');
             
+            // Сохраняем для последующей записи
             window.currentCalculation = {
+                grsName: grsName,
                 operator: operator,
-                gasLevel: gasLevel,
-                gasFlow: gasFlow,
-                result: result.toFixed(2),
+                dailyFlow: dailyFlow,
+                sulfurInGas: sulfurInGas,
+                sulfurInOdorant: sulfurInOdorant,
+                hourlyFlow: hourlyFlow.toFixed(2),
+                hourlyOdorant: hourlyOdorant.toFixed(2),
+                minuteOdorant: minuteOdorant.toFixed(4),
+                dropsPerMinute: dropsPerMinute.toFixed(2),
+                result: resultValue,
+                resultText: resultText,
                 timestamp: new Date().toLocaleString('ru-RU')
             };
             
@@ -457,8 +664,8 @@
                 
                 showMessage('✅ Данные сохранены в облако!', 'success');
                 
-                document.getElementById('gasLevel').value = '';
-                document.getElementById('gasFlow').value = '';
+                document.getElementById('dailyFlow').value = '';
+                document.getElementById('sulfurInGas').value = '';
                 document.getElementById('result').classList.remove('show');
                 window.currentCalculation = null;
                 
@@ -473,9 +680,11 @@
         function openSettings() {
             document.getElementById('settingsModal').classList.add('show');
             
+            const sulfurInOdorant = localStorage.getItem('sulfurInOdorant') || '';
             const scriptUrl = localStorage.getItem('scriptUrl') || '';
             const sheetUrl = localStorage.getItem('sheetUrl') || '';
             
+            document.getElementById('sulfurInOdorant').value = sulfurInOdorant;
             document.getElementById('scriptUrl').value = scriptUrl;
             document.getElementById('sheetUrl').value = sheetUrl;
         }
@@ -485,19 +694,21 @@
         }
         
         function saveSettings() {
+            const sulfurInOdorant = parseFloat(document.getElementById('sulfurInOdorant').value);
             const scriptUrl = document.getElementById('scriptUrl').value.trim();
             const sheetUrl = document.getElementById('sheetUrl').value.trim();
             
-            if (!scriptUrl || !sheetUrl) {
-                alert('Заполните оба поля!');
+            if (!sulfurInOdorant || sulfurInOdorant <= 0) {
+                alert('Введите содержание серы в одоранте!');
                 return;
             }
             
+            localStorage.setItem('sulfurInOdorant', sulfurInOdorant);
             localStorage.setItem('scriptUrl', scriptUrl);
             localStorage.setItem('sheetUrl', sheetUrl);
             
             document.getElementById('setupSection').classList.add('configured');
-            document.querySelector('.setup-title').textContent = '✅ Облако настроено';
+            document.querySelector('.setup-title').textContent = '✅ Параметры настроены (f = ' + sulfurInOdorant + ' г/м³)';
             
             closeSettings();
             showMessage('✅ Настройки сохранены!', 'success');
