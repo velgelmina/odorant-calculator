@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Расчет одоранта ГРС</title>
+    <title>Расчет одоранта ГРС - ICA</title>
     <style>
         * {
             margin: 0;
@@ -12,39 +12,60 @@
         }
         
         body {
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
         
         .container {
-            max-width: 500px;
+            max-width: 520px;
             margin: 0 auto;
             background: white;
             border-radius: 20px;
-            padding: 30px;
+            padding: 25px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
         
-        h1 {
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+        
+        .logo {
+            width: 120px;
+            height: auto;
+        }
+        
+        .title-block {
+            text-align: right;
+            flex: 1;
+        }
+        
+        .title {
             color: #333;
-            text-align: center;
-            margin-bottom: 10px;
-            font-size: 24px;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+        
+        .title-icon {
+            color: #ff9800;
+            margin-right: 5px;
         }
         
         .subtitle {
-            text-align: center;
             color: #666;
-            margin-bottom: 20px;
-            font-size: 14px;
+            font-size: 13px;
         }
         
         .info-box {
             background: #e3f2fd;
             border-left: 4px solid #2196F3;
-            padding: 12px;
+            padding: 12px 15px;
             margin-bottom: 20px;
             font-size: 13px;
             border-radius: 5px;
@@ -54,15 +75,55 @@
             color: #1976D2;
         }
         
-        .form-group {
+        .setup-section {
+            background: #fff9e6;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
             margin-bottom: 20px;
+        }
+        
+        .setup-section.configured {
+            background: #e8f5e9;
+            border-color: #4CAF50;
+        }
+        
+        .setup-title {
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .setup-section.configured .setup-title {
+            color: #2e7d32;
+        }
+        
+        .btn-settings {
+            background: #ff9800;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        
+        .btn-settings:hover {
+            background: #f57c00;
+        }
+        
+        .form-group {
+            margin-bottom: 18px;
         }
         
         label {
             display: block;
             margin-bottom: 8px;
-            color: #555;
-            font-weight: bold;
+            color: #333;
+            font-weight: 600;
             font-size: 14px;
         }
         
@@ -77,13 +138,18 @@
             padding: 12px;
             border: 2px solid #e0e0e0;
             border-radius: 10px;
-            font-size: 16px;
+            font-size: 15px;
             transition: border-color 0.3s;
+            font-family: inherit;
         }
         
         input:focus, select:focus {
             outline: none;
             border-color: #667eea;
+        }
+        
+        input::placeholder {
+            color: #bbb;
         }
         
         .btn {
@@ -98,14 +164,18 @@
             margin-top: 10px;
         }
         
-        .btn-calculate {
+        .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
         
-        .btn-calculate:hover {
+        .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
         }
         
         .btn-save {
@@ -116,40 +186,31 @@
         .btn-save:hover {
             background: #45a049;
             transform: translateY(-2px);
-        }
-        
-        .btn-save:disabled {
-            background: #cccccc;
-            cursor: not-allowed;
-        }
-        
-        .btn-settings {
-            background: #ff9800;
-            color: white;
-            font-size: 14px;
-            padding: 10px;
+            box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
         }
         
         .btn-view-data {
             background: #2196F3;
             color: white;
-            font-size: 14px;
-            padding: 10px;
+            margin-top: 15px;
         }
         
-        .result {
-            background: #f0f7ff;
-            border: 2px solid #667eea;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
-            text-align: center;
+        .btn-view-data:hover {
+            background: #0b7dda;
+        }
+        
+        #result {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 25px;
             display: none;
+            color: white;
         }
         
-        .result.show {
+        #result.show {
             display: block;
-            animation: slideIn 0.5s;
+            animation: slideIn 0.5s ease-out;
         }
         
         @keyframes slideIn {
@@ -163,90 +224,87 @@
             }
         }
         
-        .result-value {
-            font-size: 36px;
-            color: #667eea;
+        .result-title {
+            font-size: 18px;
             font-weight: bold;
-            margin: 10px 0;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .result-triple {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .result-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .result-card.highlight {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.6);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transform: scale(1.02);
         }
         
         .result-label {
-            color: #555;
-            font-size: 14px;
+            font-size: 12px;
+            opacity: 0.9;
             margin-bottom: 5px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .result-value {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 3px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .result-unit {
+            font-size: 13px;
+            opacity: 0.85;
+            font-weight: 500;
         }
         
         .result-details {
-            background: white;
-            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
             padding: 15px;
             margin-top: 15px;
-            font-size: 13px;
-            text-align: left;
         }
         
         .result-details .row {
             display: flex;
             justify-content: space-between;
-            padding: 5px 0;
-            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 8px;
+            font-size: 13px;
         }
         
         .result-details .row:last-child {
-            border-bottom: none;
+            margin-bottom: 0;
         }
         
-        .message {
-            padding: 12px;
-            border-radius: 8px;
-            margin: 15px 0;
-            text-align: center;
-            display: none;
-            font-size: 14px;
-        }
-        
-        .message.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-            display: block;
-        }
-        
-        .message.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-            display: block;
-        }
-        
-        .setup-section {
-            background: #fff3cd;
-            border: 2px solid #ffc107;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .setup-section.configured {
-            background: #d4edda;
-            border-color: #4CAF50;
-        }
-        
-        .setup-title {
-            font-weight: bold;
-            color: #856404;
-            margin-bottom: 10px;
-            font-size: 14px;
-        }
-        
-        .setup-section.configured .setup-title {
-            color: #155724;
+        .result-details strong {
+            font-weight: 600;
         }
         
         .loading {
             display: none;
             text-align: center;
-            padding: 10px;
+            margin-top: 20px;
+            font-size: 16px;
             color: #667eea;
         }
         
@@ -254,6 +312,33 @@
             display: block;
         }
         
+        .message {
+            display: none;
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .message.show {
+            display: block;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        /* Модальное окно настроек */
         .settings-modal {
             display: none;
             position: fixed;
@@ -263,22 +348,30 @@
             height: 100%;
             background: rgba(0,0,0,0.5);
             z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
         }
         
         .settings-modal.show {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         
         .settings-content {
             background: white;
-            border-radius: 15px;
+            border-radius: 20px;
             padding: 25px;
-            max-width: 450px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
+            max-width: 500px;
+            width: 100%;
+            margin: 20px auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
         
         .settings-header {
@@ -288,113 +381,142 @@
             margin-bottom: 20px;
         }
         
+        .settings-header h2 {
+            color: #333;
+            font-size: 22px;
+        }
+        
         .close-btn {
-            background: none;
+            background: #f44336;
+            color: white;
             border: none;
-            font-size: 24px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 20px;
             cursor: pointer;
-            color: #999;
+            line-height: 1;
+            transition: background 0.3s;
+        }
+        
+        .close-btn:hover {
+            background: #d32f2f;
         }
         
         .instruction-box {
             background: #f5f5f5;
+            border-left: 4px solid #667eea;
             padding: 15px;
-            border-radius: 8px;
+            margin-bottom: 20px;
+            border-radius: 5px;
             font-size: 13px;
             line-height: 1.6;
-            margin: 10px 0;
         }
-
-        .grs-input-group {
-            display: flex;
-            gap: 10px;
-        }
-
-        .grs-input-group select {
-            flex: 2;
-        }
-
-        .grs-input-group input {
-            flex: 1;
-        }
-
-        .add-grs-btn {
-            padding: 8px 15px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .title-block {
+                text-align: center;
+            }
+            
+            .result-value {
+                font-size: 24px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>⚡ Расчет одоранта</h1>
-        <div class="subtitle">для ГРС</div>
+        <div class="header">
+            <img src="https://github.com/velgelmina/odorant-calculator/blob/main/logo%20ica.jpeg?raw=true" alt="ICA Logo" class="logo">
+            <div class="title-block">
+                <div class="title">
+                    <span class="title-icon">🧪</span>Расчет одоранта ГРС
+                </div>
+                <div class="subtitle">СТ АО 970740000392-49-2025</div>
+            </div>
+        </div>
         
         <div class="info-box">
-            <strong>📋 Методика расчета:</strong><br>
-            По СТ АО 970740000392-49-2025<br>
-            Норма одоризации: 16 г/1000м³
+            <strong>📋 Расчет нормы добавления одоранта</strong><br>
+            Часовой расход газа указывается в <strong>м³/ч</strong>.
         </div>
         
-        <div id="setupSection" class="setup-section">
-            <div class="setup-title">⚙️ Настройка параметров</div>
-            <button class="btn btn-settings" onclick="openSettings()">Настроить параметры</button>
-        </div>
-        
-        <div class="form-group">
-            <label for="grsName">
-                Название ГРС:
-            </label>
-            <div class="grs-input-group">
-                <select id="grsName" onchange="handleGrsSelect()">
-                    <option value="">Выберите ГРС</option>
-                    <option value="new">+ Добавить новую ГРС</option>
-                </select>
-                <input type="text" id="newGrsName" placeholder="Введите название" style="display: none;">
+        <div class="setup-section" id="setupSection">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="setup-title">⚙️ Требуется настройка параметров</div>
+                <button class="btn-settings" onclick="openSettings()">Настроить</button>
             </div>
         </div>
         
         <div class="form-group">
-            <label for="operator">Оператор (смена):</label>
-            <select id="operator">
-                <option value="">Выберите смену</option>
-                <option value="Смена 1">Смена 1</option>
-                <option value="Смена 2">Смена 2</option>
-                <option value="Смена 3">Смена 3</option>
-                <option value="Смена 4">Смена 4</option>
+            <label for="grsName">Название ГРС:</label>
+            <select id="grsName" onchange="handleGrsSelect()">
+                <option value="">Выберите ГРС...</option>
+                <option value="new">➕ Добавить новую ГРС...</option>
             </select>
+            <input type="text" id="newGrsName" placeholder="Введите название новой ГРС" 
+                   style="display: none; margin-top: 10px;">
         </div>
         
         <div class="form-group">
-            <label for="dailyFlow">
-                Суточный расход газа (Qсут):
-                <span class="hint">м³/сут</span>
+            <label for="operatorDate">Дата:</label>
+            <input type="date" id="operatorDate">
+        </div>
+        
+        <div class="form-group">
+            <label for="hourlyFlow">
+                Часовой расход газа:
+                <span class="hint">м³/ч</span>
             </label>
-            <input type="number" id="dailyFlow" placeholder="Введите расход газа за сутки" step="0.01">
+            <input type="number" id="hourlyFlow" placeholder="Например: 650" step="1" min="0">
         </div>
         
         <div class="form-group">
             <label for="sulfurInGas">
                 Содержание серы в газе (S):
-                <span class="hint">г/1000м³ (из химанализа)</span>
+                <span class="hint">г/1000 м³</span>
             </label>
-            <input type="number" id="sulfurInGas" placeholder="Содержание меркаптановой серы" step="0.01">
+            <input type="number" id="sulfurInGas" placeholder="Например: 10" step="0.1" min="0" max="16">
         </div>
         
-        <button class="btn btn-calculate" onclick="calculate()">Рассчитать</button>
+        <button class="btn btn-primary" onclick="calculate()">🧮 Рассчитать</button>
         
-        <div id="result" class="result">
-            <div class="result-label">Необходимый расход одоранта:</div>
-            <div class="result-value" id="resultValue">0</div>
+        <div id="result">
+            <div class="result-title">📊 Результаты расчета</div>
+            
+            <div class="result-triple">
+                <div class="result-card" id="cardSeconds">
+                    <div class="result-label">⏱️ Капля каждые</div>
+                    <div class="result-value" id="resultSeconds">0</div>
+                    <div class="result-unit">секунд</div>
+                </div>
+                
+                <div class="result-card" id="cardDrops">
+                    <div class="result-label">💧 Капель</div>
+                    <div class="result-value" id="resultDrops">0</div>
+                    <div class="result-unit">кап/мин</div>
+                </div>
+                
+                <div class="result-card" id="cardMl">
+                    <div class="result-label">⚗️ Миллилитров</div>
+                    <div class="result-value" id="resultMl">0</div>
+                    <div class="result-unit">мл/мин</div>
+                </div>
+            </div>
             
             <div class="result-details" id="resultDetails">
                 <div class="row">
                     <span>Часовой расход газа:</span>
-                    <strong id="hourlyFlow">-</strong>
+                    <strong id="hourlyFlowDisplay">-</strong>
                 </div>
                 <div class="row">
                     <span>Расход одоранта (час):</span>
@@ -403,10 +525,6 @@
                 <div class="row">
                     <span>Расход одоранта (мин):</span>
                     <strong id="minuteOdorant">-</strong>
-                </div>
-                <div class="row">
-                    <span>Капель в минуту:</span>
-                    <strong id="dropsPerMinute">-</strong>
                 </div>
             </div>
             
@@ -430,7 +548,7 @@
             <div class="instruction-box">
                 <strong>📋 Параметры расчета</strong><br><br>
                 Укажите содержание меркаптановой серы в одоранте (из паспорта на партию одоранта).<br><br>
-                Типичные значения: 0,37 или 0,41 г/м³
+                Типичные значения: 0.37, 0.41 или 0.44 г/м³
             </div>
             
             <div class="form-group">
@@ -440,29 +558,24 @@
                 </label>
                 <input type="number" id="sulfurInOdorant" placeholder="Например: 0.37" step="0.01" min="0.1" max="1.0">
             </div>
-
-            <div class="instruction-box">
-                <strong>☁️ Облачное хранение (Google Sheets)</strong><br><br>
-                                
-            </div>
-            
-            <div class="form-group">
-                <label for="scriptUrl">URL Apps Script:</label>
-                <input type="text" id="scriptUrl" placeholder="https://script.google.com/macros/s/...">
-            </div>
-            
-            <div class="form-group">
-                <label for="sheetUrl">URL Google Таблицы:</label>
-                <input type="text" id="sheetUrl" placeholder="https://docs.google.com/spreadsheets/d/...">
-            </div>
             
             <button class="btn btn-save" onclick="saveSettings()">💾 Сохранить настройки</button>
         </div>
     </div>
 
     <script>
-        // Константы
-        const NORM = 16; // Норма одоризации г/1000м³
+        // 
+        // Ссылки на Google 
+        
+        const CONFIG = {
+            GOOGLE_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbxNvjKdaTeT1l8MeFFrSYUtL1HxNQMvgia1oK22pZiEci_kYG5pQUZ9FBlO-UfxJwjg/exec',
+            GOOGLE_SHEET_URL: 'https://docs.google.com/spreadsheets/d/1YSEuOVWVz7WCljFwKYpVIk71PUip8TU70lpVWUINF5c/edit?gid=0#gid=0'
+        };
+        
+        // ===================================
+        
+        // Константы расчета
+        const NORM = 16; // Норма одоризации г/1000м3
         const DROP_WEIGHT = 0.03244; // Вес одной капли, г
         const DROP_VOLUME = 0.04; // Объем одной капли, мл
 
@@ -470,12 +583,16 @@
         window.onload = function() {
             loadSettings();
             loadGrsList();
+            setTodayDate();
         };
+
+        function setTodayDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('operatorDate').value = today;
+        }
 
         function loadSettings() {
             const sulfurInOdorant = localStorage.getItem('sulfurInOdorant');
-            const scriptUrl = localStorage.getItem('scriptUrl');
-            const sheetUrl = localStorage.getItem('sheetUrl');
             
             if (sulfurInOdorant) {
                 document.getElementById('setupSection').classList.add('configured');
@@ -487,7 +604,6 @@
             const grsList = JSON.parse(localStorage.getItem('grsList') || '[]');
             const select = document.getElementById('grsName');
             
-            // Очищаем и добавляем опции
             while (select.options.length > 2) {
                 select.remove(2);
             }
@@ -520,7 +636,6 @@
             if (select.value === 'new') {
                 const newGrsName = newInput.value.trim();
                 if (newGrsName) {
-                    // Добавляем в список
                     const grsList = JSON.parse(localStorage.getItem('grsList') || '[]');
                     if (!grsList.includes(newGrsName)) {
                         grsList.push(newGrsName);
@@ -536,31 +651,29 @@
         
         function calculate() {
             const grsName = getGrsName();
-            const operator = document.getElementById('operator').value;
-            const dailyFlow = parseFloat(document.getElementById('dailyFlow').value);
+            const operatorDate = document.getElementById('operatorDate').value;
+            const hourlyFlow = parseFloat(document.getElementById('hourlyFlow').value);
             const sulfurInGas = parseFloat(document.getElementById('sulfurInGas').value);
             const sulfurInOdorant = parseFloat(localStorage.getItem('sulfurInOdorant'));
             
-            // Проверка настроек
             if (!sulfurInOdorant) {
                 showMessage('⚠️ Сначала настройте содержание серы в одоранте!', 'error');
                 openSettings();
                 return;
             }
             
-            // Проверка полей
             if (!grsName) {
                 showMessage('❌ Выберите или введите название ГРС!', 'error');
                 return;
             }
             
-            if (!operator) {
-                showMessage('❌ Выберите оператора!', 'error');
+            if (!operatorDate) {
+                showMessage('❌ Укажите дату!', 'error');
                 return;
             }
             
-            if (!dailyFlow || dailyFlow <= 0) {
-                showMessage('❌ Введите суточный расход газа!', 'error');
+            if (!hourlyFlow || hourlyFlow <= 0) {
+                showMessage('❌ Введите часовой расход газа!', 'error');
                 return;
             }
             
@@ -569,61 +682,60 @@
                 return;
             }
             
-            // РАСЧЕТ ПО ФОРМУЛАМ
-            // 1. Часовой расход газа (формула 16)
-            const hourlyFlow = dailyFlow / 24;
-            
-            // 2. Часовой расход одоранта (формула 17)
+            // РАСЧЕТ ПО ФОРМУЛЕ 
             const hourlyOdorant = (hourlyFlow * (NORM - sulfurInGas)) / (1000 * sulfurInOdorant);
-            
-            // 3. Минутный расход одоранта (формула 18)
             const minuteOdorant = hourlyOdorant / 60;
-            
-            // 4. Капель в минуту (формула 19)
             const dropsPerMinute = minuteOdorant / DROP_WEIGHT;
+            const mlPerMinute = dropsPerMinute * DROP_VOLUME;
             
-            // Определяем формат вывода
-            let resultText = '';
-            let resultValue = '';
+            // сек на каплю
+            const secondsPerDrop = 60 / dropsPerMinute;
             
+            // три формата
+            document.getElementById('resultSeconds').textContent = secondsPerDrop.toFixed(1);
+            document.getElementById('resultDrops').textContent = dropsPerMinute.toFixed(1);
+            document.getElementById('resultMl').textContent = mlPerMinute.toFixed(2);
+            
+            // подсветка
+            const cardSeconds = document.getElementById('cardSeconds');
+            const cardDrops = document.getElementById('cardDrops');
+            const cardMl = document.getElementById('cardMl');
+            
+            // подсветки
+            cardSeconds.classList.remove('highlight');
+            cardDrops.classList.remove('highlight');
+            cardMl.classList.remove('highlight');
+            
+            // 
             if (dropsPerMinute < 60) {
-                // Формула 20 - секунд на каплю
-                const secondsPerDrop = 60 / dropsPerMinute;
-                resultValue = secondsPerDrop.toFixed(1) + ' сек';
-                resultText = '1 капля каждые ' + secondsPerDrop.toFixed(1) + ' секунд';
-            } else if (dropsPerMinute >= 60 && dropsPerMinute <= 180) {
-                // Капель в минуту
-                resultValue = dropsPerMinute.toFixed(1) + ' кап/мин';
-                resultText = dropsPerMinute.toFixed(1) + ' капель в минуту';
+                cardSeconds.classList.add('highlight');
+            } else if (dropsPerMinute <= 180) {
+                cardDrops.classList.add('highlight');
             } else {
-                // Формула 22 - мл в минуту
-                const mlPerMinute = dropsPerMinute * DROP_VOLUME;
-                resultValue = mlPerMinute.toFixed(1) + ' мл/мин';
-                resultText = mlPerMinute.toFixed(1) + ' миллилитров в минуту';
+                cardMl.classList.add('highlight');
             }
             
-            // Показываем результат
-            document.getElementById('resultValue').textContent = resultText;
-            document.getElementById('hourlyFlow').textContent = hourlyFlow.toFixed(2) + ' м³/ч';
+            // допинфа
+            document.getElementById('hourlyFlowDisplay').textContent = hourlyFlow.toFixed(2) + ' м³/ч';
             document.getElementById('hourlyOdorant').textContent = hourlyOdorant.toFixed(2) + ' г/ч';
             document.getElementById('minuteOdorant').textContent = minuteOdorant.toFixed(4) + ' г/мин';
-            document.getElementById('dropsPerMinute').textContent = dropsPerMinute.toFixed(2);
             
             document.getElementById('result').classList.add('show');
             
-            // Сохраняем для последующей записи
+            // запятая в числах
+            const formatWithComma = (num, decimals) => num.toFixed(decimals).replace('.', ',');
+            
             window.currentCalculation = {
                 grsName: grsName,
-                operator: operator,
-                dailyFlow: dailyFlow,
-                sulfurInGas: sulfurInGas,
-                sulfurInOdorant: sulfurInOdorant,
-                hourlyFlow: hourlyFlow.toFixed(2),
-                hourlyOdorant: hourlyOdorant.toFixed(2),
-                minuteOdorant: minuteOdorant.toFixed(4),
-                dropsPerMinute: dropsPerMinute.toFixed(2),
-                result: resultValue,
-                resultText: resultText,
+                operatorDate: operatorDate,
+                hourlyFlow: formatWithComma(hourlyFlow, 2), // С запятой
+                sulfurInGas: formatWithComma(sulfurInGas, 1), // С запятой
+                sulfurInOdorant: formatWithComma(sulfurInOdorant, 2), // С запятой
+                hourlyOdorant: formatWithComma(hourlyOdorant, 2),
+                minuteOdorant: formatWithComma(minuteOdorant, 4),
+                secondsPerDrop: formatWithComma(secondsPerDrop, 2),
+                dropsPerMinute: formatWithComma(dropsPerMinute, 2),
+                mlPerMinute: formatWithComma(mlPerMinute, 2),
                 timestamp: new Date().toLocaleString('ru-RU')
             };
             
@@ -631,13 +743,7 @@
         }
         
         async function saveData() {
-            const scriptUrl = localStorage.getItem('scriptUrl');
-            
-            if (!scriptUrl) {
-                showMessage('⚠️ Сначала настройте облачное хранение!', 'error');
-                openSettings();
-                return;
-            }
+            const scriptUrl = CONFIG.GOOGLE_SCRIPT_URL;
             
             if (!window.currentCalculation) {
                 showMessage('❌ Сначала выполните расчет!', 'error');
@@ -648,7 +754,7 @@
             document.getElementById('saveBtn').disabled = true;
             
             try {
-                const response = await fetch(scriptUrl, {
+                await fetch(scriptUrl, {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: {
@@ -657,20 +763,23 @@
                     body: JSON.stringify(window.currentCalculation)
                 });
                 
-                // Сохраняем также локально для резервной копии
                 let localData = JSON.parse(localStorage.getItem('odorantData') || '[]');
                 localData.push(window.currentCalculation);
                 localStorage.setItem('odorantData', JSON.stringify(localData));
                 
                 showMessage('✅ Данные сохранены в облако!', 'success');
                 
-                document.getElementById('dailyFlow').value = '';
+                document.getElementById('hourlyFlow').value = '';
                 document.getElementById('sulfurInGas').value = '';
                 document.getElementById('result').classList.remove('show');
+                setTodayDate();
                 window.currentCalculation = null;
-                
             } catch (error) {
-                showMessage('❌ Ошибка сохранения: ' + error.message, 'error');
+                showMessage('✅ Данные сохранены локально! (Проверьте настройки облака)', 'success');
+                
+                let localData = JSON.parse(localStorage.getItem('odorantData') || '[]');
+                localData.push(window.currentCalculation);
+                localStorage.setItem('odorantData', JSON.stringify(localData));
             } finally {
                 document.getElementById('loading').classList.remove('show');
                 document.getElementById('saveBtn').disabled = false;
@@ -678,15 +787,13 @@
         }
         
         function openSettings() {
-            document.getElementById('settingsModal').classList.add('show');
+            const modal = document.getElementById('settingsModal');
+            modal.classList.add('show');
             
-            const sulfurInOdorant = localStorage.getItem('sulfurInOdorant') || '';
-            const scriptUrl = localStorage.getItem('scriptUrl') || '';
-            const sheetUrl = localStorage.getItem('sheetUrl') || '';
-            
-            document.getElementById('sulfurInOdorant').value = sulfurInOdorant;
-            document.getElementById('scriptUrl').value = scriptUrl;
-            document.getElementById('sheetUrl').value = sheetUrl;
+            const sulfurInOdorant = localStorage.getItem('sulfurInOdorant');
+            if (sulfurInOdorant) {
+                document.getElementById('sulfurInOdorant').value = sulfurInOdorant;
+            }
         }
         
         function closeSettings() {
@@ -694,45 +801,46 @@
         }
         
         function saveSettings() {
-            const sulfurInOdorant = parseFloat(document.getElementById('sulfurInOdorant').value);
-            const scriptUrl = document.getElementById('scriptUrl').value.trim();
-            const sheetUrl = document.getElementById('sheetUrl').value.trim();
+            const sulfurInOdorant = document.getElementById('sulfurInOdorant').value;
             
-            if (!sulfurInOdorant || sulfurInOdorant <= 0) {
-                alert('Введите содержание серы в одоранте!');
+            if (!sulfurInOdorant || parseFloat(sulfurInOdorant) <= 0) {
+                alert('❌ Введите корректное значение содержания серы в одоранте!');
                 return;
             }
             
             localStorage.setItem('sulfurInOdorant', sulfurInOdorant);
-            localStorage.setItem('scriptUrl', scriptUrl);
-            localStorage.setItem('sheetUrl', sheetUrl);
             
-            document.getElementById('setupSection').classList.add('configured');
-            document.querySelector('.setup-title').textContent = '✅ Параметры настроены (f = ' + sulfurInOdorant + ' г/м³)';
-            
+            loadSettings();
             closeSettings();
             showMessage('✅ Настройки сохранены!', 'success');
         }
         
         function openSheet() {
-            const sheetUrl = localStorage.getItem('sheetUrl');
-            if (!sheetUrl) {
-                showMessage('⚠️ Сначала настройте Google Таблицу!', 'error');
-                openSettings();
-                return;
-            }
+            const sheetUrl = CONFIG.GOOGLE_SHEET_URL;
             window.open(sheetUrl, '_blank');
         }
         
         function showMessage(text, type) {
             const message = document.getElementById('message');
             message.textContent = text;
-            message.className = 'message ' + type;
-            setTimeout(hideMessage, 4000);
+            message.className = 'message show ' + type;
+            
+            setTimeout(() => {
+                hideMessage();
+            }, 5000);
         }
         
         function hideMessage() {
-            document.getElementById('message').className = 'message';
+            const message = document.getElementById('message');
+            message.classList.remove('show');
+        }
+        
+        // Закрытие модального окна при клике вне его
+        window.onclick = function(event) {
+            const modal = document.getElementById('settingsModal');
+            if (event.target === modal) {
+                closeSettings();
+            }
         }
     </script>
 </body>
